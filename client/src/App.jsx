@@ -1,36 +1,40 @@
 import { useState, useEffect } from 'react'
+import ProductList from './components/ProductList'
 
 function App() {
-    const [data, setData] = useState(null);
+    const [healthData, setHealthData] = useState(null);
 
     useEffect(() => {
         const apiUrl = import.meta.env.VITE_API_URL || '';
         fetch(`${apiUrl}/api/health`)
             .then(res => res.json())
-            .then(data => setData(data))
+            .then(data => setHealthData(data))
             .catch(err => console.error('Error fetching health check:', err));
     }, []);
 
     return (
-        <div className="container">
-            <h1>ShopSmart</h1>
-            <div className="card">
-                <h2>Backend Status</h2>
-                {data ? (
-                    <div>
-                        <p>Status: <span className="status-ok">{data.status}</span></p>
-                        <p>Message: {data.message}</p>
-                        <p>Timestamp: {data.timestamp}</p>
-                    </div>
-                ) : (
-                    <p>Loading backend status...</p>
-                )}
-            </div>
-            <p className="hint">
-                Edit <code>src/App.jsx</code> and save to test HMR
-            </p>
+        <div className="app">
+            <header className="header">
+                <h1>🛒 ShopSmart</h1>
+                <div className="health-indicator">
+                    {healthData ? (
+                        <span className="status-ok">● Backend Online</span>
+                    ) : (
+                        <span className="status-loading">○ Connecting...</span>
+                    )}
+                </div>
+            </header>
+
+            <main className="main-content">
+                <ProductList />
+            </main>
+
+            <footer className="footer">
+                <p>Built with React + Express + Prisma + SQLite</p>
+            </footer>
         </div>
     )
 }
 
 export default App
+
