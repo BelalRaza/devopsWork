@@ -6,3 +6,8 @@ dist
 build
 coverage
 .vercel
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
