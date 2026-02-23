@@ -5,6 +5,8 @@ on:
     branches:
       - demo
       - aws-test
+    paths:
+      - 'index.html'
   workflow_dispatch:
 
 jobs:
