@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - demo
+      - aws-test
   workflow_dispatch:
 
 jobs:
