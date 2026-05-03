@@ -11,3 +11,7 @@ coverage
 playwright-report/
 test-results/
 blob-report/
+terraform/.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform.lock.hcl
