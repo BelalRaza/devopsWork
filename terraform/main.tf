@@ -119,9 +119,10 @@ data "aws_iam_role" "ecs_execution_role" {
 # ---------------------------------------------------------
 
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs-task-sg-shopsmart"
-  description = "Allow inbound traffic to ECS tasks"
-  vpc_id      = data.aws_vpc.default.id
+  name_prefix            = "ecs-task-sg-shopsmart-"
+  description            = "Allow inbound traffic to ECS tasks"
+  vpc_id                 = data.aws_vpc.default.id
+  revoke_rules_on_delete = true
 
   # Backend port
   ingress {
@@ -144,6 +145,10 @@ resource "aws_security_group" "ecs_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
