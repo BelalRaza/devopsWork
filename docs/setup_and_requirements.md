@@ -2,22 +2,22 @@
 
 Before the pipeline can successfully execute, there are some manual prerequisites you need to configure on your AWS and GitHub accounts. This file will guide you through gathering those configuration elements.
 
-## 1. Setting up AWS Credentials
+## 1. Setting up AWS Credentials (AWS Academy/Vocareum)
 
-To allow GitHub Actions to safely interact with your AWS infrastructure, you need an IAM user programmed with the correct permissions.
+Since you are using an AWS Student/Academy account, your credentials **rotate and expire every time you restart your lab**. You must update your GitHub Secrets every time you start a new lab session if you want your CI/CD pipeline to work.
 
 ### Steps to get your AWS credentials:
-1. Log into your **AWS Management Console**.
-2. Navigate to **IAM (Identity and Access Management)**.
-3. Click on **Users** in the left sidebar, and then click **Add users**.
-4. Give the user a name (e.g., `github-actions-user`) and click **Next**.
-5. Under "Permissions options", select **Attach policies directly**.
-6. For this project, you will need to grant broad permissions to create S3, ECR, and ECS resources. A quick way is to attach `AdministratorAccess` (though in production, you should lock this down to only ECS/S3/ECR/VPC permissions). Click **Next**, then **Create user**.
-7. Once created, click on your new user and go to the **Security credentials** tab.
-8. Scroll down to **Access keys** and click **Create access key**.
-9. Select **Command Line Interface (CLI)**, acknowledge the prompt, and click **Next**.
-10. You will now be presented with your **Access key ID** and **Secret access key**. 
-**IMPORTANT**: Copy the secret access key immediately; it will not be shown again!
+1. Log into your **AWS Academy / Vocareum** dashboard.
+2. Start your lab environment.
+3. Click on the **AWS Details** button (usually located at the top of the lab page).
+4. Click the **Show** button to reveal the AWS CLI configuration block.
+5. You will see three lines that look like this:
+   ```
+   aws_access_key_id=ASIA...
+   aws_secret_access_key=...
+   aws_session_token=...
+   ```
+6. Keep this window open. You will need to copy **all three of these exact values** into your GitHub Secrets.
 
 ## 2. Setting up GitHub Secrets
 
@@ -31,13 +31,13 @@ Now you need to put those AWS credentials safely into your GitHub repository so 
 5. You must create **four separate secrets** matching exactly these names:
 
    * **Name:** `AWS_ACCESS_KEY_ID`
-     * **Secret:** *(paste the Access key ID from step 10 above)*
+     * **Secret:** *(paste the `aws_access_key_id` value from the lab details)*
    * **Name:** `AWS_SECRET_ACCESS_KEY`
-     * **Secret:** *(paste the Secret access key from step 10 above)*
+     * **Secret:** *(paste the `aws_secret_access_key` value from the lab details)*
    * **Name:** `AWS_SESSION_TOKEN`
-     * **Secret:** *(Optional unless you are using temporary credentials via an IAM role. If you are using standard IAM users, you can often leave this blank or input any default value depending on your academy/course requirements).*
+     * **Secret:** *(paste the massive `aws_session_token` value from the lab details. **CRITICAL:** For student accounts, the deployment will instantly fail if this is missing!)*
    * **Name:** `AWS_REGION`
-     * **Secret:** `us-east-1` *(or whichever region you prefer, such as `us-west-2`)*.
+     * **Secret:** `us-east-1` *(or whichever region your lab is hosted in)*.
 
 ## 3. How to Run the Project Locally
 
