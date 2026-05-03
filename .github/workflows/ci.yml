@@ -6,12 +6,17 @@ on:
   pull_request:
     branches: [main, master]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # ============================================================
   # Backend Unit & Integration Tests
   # ============================================================
   backend:
     runs-on: ubuntu-latest
+
 
     defaults:
       run:
