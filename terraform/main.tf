@@ -5,6 +5,13 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  # Remote state storage — persists state between GitHub Actions runs
+  backend "s3" {
+    bucket = "shopsmart-tfstate-462559713472"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 provider "aws" {
