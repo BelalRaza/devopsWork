@@ -237,10 +237,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Deploy BACKEND to ECS
+      - name: Deploy to ECS
         run: |
           aws ecs update-service --cluster shopsmart-cluster --service shopsmart-service --force-new-deployment
-
-      - name: Deploy FRONTEND to ECS
-        run: |
-          aws ecs update-service --cluster shopsmart-cluster --service shopsmart-frontend-service --force-new-deployment

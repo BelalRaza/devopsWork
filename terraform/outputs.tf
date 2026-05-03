@@ -18,12 +18,7 @@ output "ecs_cluster_name" {
   description = "The name of the ECS cluster"
 }
 
-output "ecs_backend_service_name" {
+output "ecs_service_name" {
   value       = aws_ecs_service.app_service.name
   description = "The name of the backend ECS service"
-}
-
-output "ecs_frontend_service_name" {
-  value       = aws_ecs_service.frontend_service.name
-  description = "The name of the frontend ECS service"
 }

@@ -157,11 +157,11 @@ resource "aws_security_group" "ecs_sg" {
 # ---------------------------------------------------------
 
 resource "aws_ecs_task_definition" "app_task" {
-  family                   = "shopsmart-backend-task"
+  family                   = "shopsmart-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "512"
+  memory                   = "1024"
   execution_role_arn       = data.aws_iam_role.ecs_execution_role.arn
   task_role_arn            = data.aws_iam_role.ecs_execution_role.arn
 
@@ -200,42 +200,7 @@ resource "aws_ecs_task_definition" "app_task" {
           "awslogs-create-group"  = "true"
         }
       }
-    }
-  ])
-}
-
-resource "aws_ecs_service" "app_service" {
-  name            = "shopsmart-service"
-  cluster         = aws_ecs_cluster.app_cluster.id
-  task_definition = aws_ecs_task_definition.app_task.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
-
-  network_configuration {
-    subnets          = data.aws_subnets.default.ids
-    security_groups  = [aws_security_group.ecs_sg.id]
-    assign_public_ip = true
-  }
-
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
-}
-
-# ---------------------------------------------------------
-# Frontend ECS Task Definition & Service
-# ---------------------------------------------------------
-
-resource "aws_ecs_task_definition" "frontend_task" {
-  family                   = "shopsmart-frontend-task"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = data.aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = data.aws_iam_role.ecs_execution_role.arn
-
-  container_definitions = jsonencode([
+    },
     {
       name      = "shopsmart-frontend"
       image     = "${aws_ecr_repository.frontend_repo.repository_url}:latest"
@@ -260,10 +225,10 @@ resource "aws_ecs_task_definition" "frontend_task" {
   ])
 }
 
-resource "aws_ecs_service" "frontend_service" {
-  name            = "shopsmart-frontend-service"
+resource "aws_ecs_service" "app_service" {
+  name            = "shopsmart-service"
   cluster         = aws_ecs_cluster.app_cluster.id
-  task_definition = aws_ecs_task_definition.frontend_task.arn
+  task_definition = aws_ecs_task_definition.app_task.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
