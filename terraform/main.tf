@@ -73,6 +73,16 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+resource "aws_ecr_repository" "frontend_repo" {
+  name                 = "shopsmart-frontend"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 # ---------------------------------------------------------
 # Network Configuration
 # ---------------------------------------------------------
@@ -110,12 +120,21 @@ data "aws_iam_role" "ecs_execution_role" {
 
 resource "aws_security_group" "ecs_sg" {
   name        = "ecs-task-sg-shopsmart"
-  description = "Allow inbound traffic to ECS task on port 5001"
+  description = "Allow inbound traffic to ECS tasks"
   vpc_id      = data.aws_vpc.default.id
 
+  # Backend port
   ingress {
     from_port   = 5001
     to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Frontend port (Nginx)
+  ingress {
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -193,7 +212,62 @@ resource "aws_ecs_service" "app_service" {
     assign_public_ip = true
   }
 
-  # Ignore changes to task definition so Terraform doesn't revert deployments made by CI/CD
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+}
+
+# ---------------------------------------------------------
+# Frontend ECS Task Definition & Service
+# ---------------------------------------------------------
+
+resource "aws_ecs_task_definition" "frontend_task" {
+  family                   = "shopsmart-frontend-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = data.aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = data.aws_iam_role.ecs_execution_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "shopsmart-frontend"
+      image     = "${aws_ecr_repository.frontend_repo.repository_url}:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/shopsmart-frontend"
+          "awslogs-region"        = var.aws_region
+          "awslogs-stream-prefix" = "ecs"
+          "awslogs-create-group"  = "true"
+        }
+      }
+    }
+  ])
+}
+
+resource "aws_ecs_service" "frontend_service" {
+  name            = "shopsmart-frontend-service"
+  cluster         = aws_ecs_cluster.app_cluster.id
+  task_definition = aws_ecs_task_definition.frontend_task.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = data.aws_subnets.default.ids
+    security_groups  = [aws_security_group.ecs_sg.id]
+    assign_public_ip = true
+  }
+
   lifecycle {
     ignore_changes = [task_definition]
   }

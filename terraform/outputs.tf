@@ -1,6 +1,11 @@
 output "ecr_repository_url" {
   value       = aws_ecr_repository.app_repo.repository_url
-  description = "The URL of the ECR repository"
+  description = "The URL of the backend ECR repository"
+}
+
+output "ecr_frontend_repository_url" {
+  value       = aws_ecr_repository.frontend_repo.repository_url
+  description = "The URL of the frontend ECR repository"
 }
 
 output "s3_bucket_name" {
@@ -13,7 +18,12 @@ output "ecs_cluster_name" {
   description = "The name of the ECS cluster"
 }
 
-output "ecs_service_name" {
+output "ecs_backend_service_name" {
   value       = aws_ecs_service.app_service.name
-  description = "The name of the ECS service"
+  description = "The name of the backend ECS service"
+}
+
+output "ecs_frontend_service_name" {
+  value       = aws_ecs_service.frontend_service.name
+  description = "The name of the frontend ECS service"
 }
