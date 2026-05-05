@@ -171,6 +171,20 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Ensure S3 State Bucket Exists
+        run: |
+          # Extract the bucket name from main.tf
+          BUCKET_NAME=$(grep -o 'bucket[[:space:]]*=[[:space:]]*"[^"]*"' main.tf | cut -d'"' -f2)
+          echo "Checking if S3 bucket $BUCKET_NAME exists..."
+          if ! aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
+            echo "Bucket does not exist. Creating..."
+            aws s3api create-bucket --bucket "$BUCKET_NAME" --region us-east-1
+            # Optional: Enable versioning for the state bucket
+            aws s3api put-bucket-versioning --bucket "$BUCKET_NAME" --versioning-configuration Status=Enabled
+          else
+            echo "Bucket already exists."
+          fi
+
       - name: Terraform Init
         run: terraform init
 
