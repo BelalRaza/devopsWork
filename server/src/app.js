@@ -4,26 +4,8 @@ const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
-// CORS Configuration - Allow frontend origins
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+// CORS Configuration - Allow all origins for the ECS deployment
+app.use(cors());
 
 app.use(express.json());
 
