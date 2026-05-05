@@ -217,7 +217,7 @@ jobs:
       - name: Build, tag, and push BACKEND image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: shopsmart-backend
+          ECR_REPOSITORY: shopsmart-backend-v2
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -f Dockerfile \
@@ -229,7 +229,7 @@ jobs:
       - name: Build, tag, and push FRONTEND image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: shopsmart-frontend
+          ECR_REPOSITORY: shopsmart-frontend-v2
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -f Dockerfile.frontend \
@@ -240,4 +240,4 @@ jobs:
 
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster shopsmart-cluster --service shopsmart-service --force-new-deployment
+          aws ecs update-service --cluster shopsmart-cluster-v2 --service shopsmart-service-v2 --force-new-deployment
