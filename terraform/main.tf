@@ -9,7 +9,7 @@ terraform {
   # Remote state storage — persists state between GitHub Actions runs
   backend "s3" {
     bucket = "shopsmart-tfstate-462559713472"
-    key    = "terraform-v2.tfstate"
+    key    = "terraform-v3.tfstate"
     region = "us-east-1"
   }
 }
@@ -64,7 +64,7 @@ resource "aws_s3_bucket_public_access_block" "app_bucket_public_access_block" {
 # ---------------------------------------------------------
 
 resource "aws_ecr_repository" "app_repo" {
-  name                 = "shopsmart-backend-v2"
+  name                 = "shopsmart-backend-v3"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
@@ -74,7 +74,7 @@ resource "aws_ecr_repository" "app_repo" {
 }
 
 resource "aws_ecr_repository" "frontend_repo" {
-  name                 = "shopsmart-frontend-v2"
+  name                 = "shopsmart-frontend-v3"
   image_tag_mutability = "MUTABLE"
   force_delete         = true
 
@@ -103,7 +103,7 @@ data "aws_subnets" "default" {
 # ---------------------------------------------------------
 
 resource "aws_ecs_cluster" "app_cluster" {
-  name = "shopsmart-cluster-v2"
+  name = "shopsmart-cluster-v3"
 }
 
 # ---------------------------------------------------------
@@ -157,7 +157,7 @@ resource "aws_security_group" "ecs_sg" {
 # ---------------------------------------------------------
 
 resource "aws_ecs_task_definition" "app_task" {
-  family                   = "shopsmart-task-v2"
+  family                   = "shopsmart-task-v3"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "512"
@@ -226,7 +226,7 @@ resource "aws_ecs_task_definition" "app_task" {
 }
 
 resource "aws_ecs_service" "app_service" {
-  name            = "shopsmart-service-v2"
+  name            = "shopsmart-service-v3"
   cluster         = aws_ecs_cluster.app_cluster.id
   task_definition = aws_ecs_task_definition.app_task.arn
   desired_count   = 1
