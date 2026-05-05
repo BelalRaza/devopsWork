@@ -9,7 +9,7 @@ terraform {
   # Remote state storage — persists state between GitHub Actions runs
   backend "s3" {
     bucket = "shopsmart-tfstate-462559713472"
-    key    = "terraform-v3.tfstate"
+    key    = "terraform-v2.tfstate"
     region = "us-east-1"
   }
 }
