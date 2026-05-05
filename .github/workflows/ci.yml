@@ -173,8 +173,8 @@ jobs:
 
       - name: Ensure S3 State Bucket Exists
         run: |
-          # Extract the bucket name from main.tf
-          BUCKET_NAME=$(grep -o 'bucket[[:space:]]*=[[:space:]]*"[^"]*"' main.tf | cut -d'"' -f2)
+          # Extract the bucket name from main.tf (only the first match to avoid grabbing application buckets)
+          BUCKET_NAME=$(grep -o 'bucket[[:space:]]*=[[:space:]]*"[^"]*"' main.tf | head -n 1 | cut -d'"' -f2)
           echo "Checking if S3 bucket $BUCKET_NAME exists..."
           if ! aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
             echo "Bucket does not exist. Creating..."
