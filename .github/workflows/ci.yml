@@ -240,4 +240,4 @@ jobs:
 
       - name: Deploy to ECS
         run: |
-          aws ecs update-service --cluster shopsmart-cluster-v3 --service shopsmart-service-v2 --force-new-deployment
+          aws ecs update-service --cluster shopsmart-cluster-v3 --service shopsmart-service-v3 --force-new-deployment
